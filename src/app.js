@@ -1,26 +1,27 @@
 // src/app.js
 
+// 1. INICIALIZA O MODULE-ALIAS: Esta deve ser a PRIMEIRA linha do seu arquivo.
+require('module-alias/register');
+
 // Importações de pacotes e middlewares
 const express = require('express');
-const cors = require('cors'); // Para permitir requisições de diferentes origens
-const morgan = require('morgan'); // para logs de requisição
+const cors = require('cors');
+const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('js-yaml');
 const fs = require('fs');
 
-// Importações da Infraestrutura
-const errorHandler = require('./Infrastructure/Express/middlewares/errorHandler');
-const SequelizeUserRepository = require('./Infrastructure/Persistence/Sequelize/SequelizeUserRepository');
-const RedisTokenBlacklistRepository = require('./Infrastructure/Persistence/Redis/RedisTokenBlacklistRepository');
-const JWTProvider = require('./Infrastructure/Providers/JWTProvider');
-// Corrigido para o nome do arquivo que você enviou
-const authRoutes = require('./Infrastructure/Express/routes/routes');
+// 2. CAMINHOS CORRIGIDOS: Todas as importações locais agora usam o alias 'src'.
+const errorHandler = require('src/Infrastructure/Express/middlewares/errorHandler');
+const SequelizeUserRepository = require('src/Infrastructure/Persistence/Sequelize/SequelizeUserRepository');
+const RedisTokenBlacklistRepository = require('src/Infrastructure/Persistence/Redis/RedisTokenBlacklistRepository');
+const JWTProvider = require('src/Infrastructure/Providers/JWTProvider');
+const authRoutes = require('src/Infrastructure/Express/routes/routes');
 
 // Importações dos Use Cases
-const RegisterUser = require('./Application/UseCases/Auth/RegisterUser');
-const LoginUser = require('./Application/UseCases/Auth/LoginUser');
-// --- NOVO: Importa o caso de uso de Logout ---
-const LogoutUser = require('./Application/UseCases/Auth/LogoutUser');
+const RegisterUser = require('src/Application/UseCases/Auth/RegisterUser');
+const LoginUser = require('src/Application/UseCases/Auth/LoginUser');
+const LogoutUser = require('src/Application/UseCases/Auth/LogoutUser');
 
 const app = express();
 
@@ -40,12 +41,10 @@ const jwtProvider = new JWTProvider();
 // Use Cases (recebem dependências de infraestrutura via construtor)
 const registerUserUseCase = new RegisterUser(userRepository);
 const loginUserUseCase = new LoginUser(userRepository, jwtProvider);
-// --- NOVO: Instancia o caso de uso de Logout ---
 const logoutUserUseCase = new LogoutUser(tokenBlacklistRepository);
 
 // --- Rotas da API ---
 // A rota principal do Express para o nosso serviço de autenticação
-// --- ATUALIZADO: Passa todas as dependências necessárias para as rotas ---
 app.use('/auth', authRoutes(
   registerUserUseCase,
   loginUserUseCase,
