@@ -4,10 +4,18 @@ openapi: 3.0.0
 info:
   title: Login API
   version: 1.0.0
+  description: API para registro, login e logout de usuários com JWT e Redis.
+
+# Adiciona tags para agrupar os endpoints na UI do Swagger
+tags:
+  - name: Authentication
+    description: Endpoints para gerenciamento de autenticação
+
 paths:
   /auth/register:
     post:
       summary: Register a new user
+      tags: [Authentication]
       requestBody:
         required: true
         content:
@@ -17,16 +25,23 @@ paths:
               properties:
                 name:
                   type: string
+                  example: "João da Silva"
                 email:
                   type: string
+                  example: "joao.silva@example.com"
                 password:
                   type: string
+                  example: "password123"
       responses:
         '201':
           description: User registered successfully
+        '400':
+          description: Invalid input or user already exists
+
   /auth/login:
     post:
       summary: Log in a user
+      tags: [Authentication]
       requestBody:
         required: true
         content:
@@ -36,8 +51,35 @@ paths:
               properties:
                 email:
                   type: string
+                  example: "joao.silva@example.com"
                 password:
                   type: string
+                  example: "password123"
       responses:
         '200':
-          description: User logged in successfully
+          description: User logged in successfully and JWT token returned
+        '401':
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      summary: Log out the current user
+      tags: [Authentication]
+      description: Invalidates the current user's JWT token by adding it to a blacklist.
+      # Indica que esta rota requer autenticação
+      security:
+        - bearerAuth: [] 
+      responses:
+        '200':
+          description: User logged out successfully
+        '401':
+          description: Unauthorized if token is missing, invalid, or already revoked
+
+# Define os esquemas de segurança para a API
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Enter JWT token in the format: Bearer <token>"

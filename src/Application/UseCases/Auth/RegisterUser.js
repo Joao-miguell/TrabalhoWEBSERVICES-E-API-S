@@ -18,7 +18,12 @@ class RegisterUser {
 
     await this.userRepository.save(user);
 
-    return new UserOutput(user);
+
+    return {
+      id: user.id,
+      name: user.name.value,
+      email: user.email.value,
+    };
   }
 }
 

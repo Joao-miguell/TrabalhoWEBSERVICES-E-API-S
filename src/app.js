@@ -6,7 +6,6 @@ const cors = require('cors'); // Para permitir requisições de diferentes orige
 const morgan = require('morgan'); // para logs de requisição
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('js-yaml');
-const path = require('path');
 const fs = require('fs');
 
 // Importações da Infraestrutura
@@ -14,11 +13,14 @@ const errorHandler = require('./Infrastructure/Express/middlewares/errorHandler'
 const SequelizeUserRepository = require('./Infrastructure/Persistence/Sequelize/SequelizeUserRepository');
 const RedisTokenBlacklistRepository = require('./Infrastructure/Persistence/Redis/RedisTokenBlacklistRepository');
 const JWTProvider = require('./Infrastructure/Providers/JWTProvider');
-const authRoutes = require('./Infrastructure/Express/routes/auth.routes');
+// Corrigido para o nome do arquivo que você enviou
+const authRoutes = require('./Infrastructure/Express/routes/routes');
 
 // Importações dos Use Cases
 const RegisterUser = require('./Application/UseCases/Auth/RegisterUser');
 const LoginUser = require('./Application/UseCases/Auth/LoginUser');
+// --- NOVO: Importa o caso de uso de Logout ---
+const LogoutUser = require('./Application/UseCases/Auth/LogoutUser');
 
 const app = express();
 
@@ -38,10 +40,18 @@ const jwtProvider = new JWTProvider();
 // Use Cases (recebem dependências de infraestrutura via construtor)
 const registerUserUseCase = new RegisterUser(userRepository);
 const loginUserUseCase = new LoginUser(userRepository, jwtProvider);
+// --- NOVO: Instancia o caso de uso de Logout ---
+const logoutUserUseCase = new LogoutUser(tokenBlacklistRepository);
 
 // --- Rotas da API ---
 // A rota principal do Express para o nosso serviço de autenticação
-app.use('/auth', authRoutes(registerUserUseCase, loginUserUseCase));
+// --- ATUALIZADO: Passa todas as dependências necessárias para as rotas ---
+app.use('/auth', authRoutes(
+  registerUserUseCase,
+  loginUserUseCase,
+  logoutUserUseCase,
+  tokenBlacklistRepository // Passado para ser usado pelo middleware de autenticação
+));
 
 // --- Configuração do Swagger UI ---
 try {
