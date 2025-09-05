@@ -1,4 +1,3 @@
-// src/Infrastructure/Persistence/Sequelize/SequelizeUserRepository.js
 const IUserRepository = require('src/Domain/Repositories/IUserRepository');
 const UserModel = require('./models/UserModel');
 const User = require('src/Domain/User/User');
@@ -21,12 +20,13 @@ class SequelizeUserRepository extends IUserRepository {
       return null;
     }
 
-    // Recria a entidade de domínio a partir dos dados do banco
-    return new User(
+    // --- CORREÇÃO APLICADA AQUI ---
+    // Usamos o método hydrate para reconstruir o usuário corretamente
+    return User.hydrate(
+      userModel.id,
       userModel.name,
       userModel.email,
-      userModel.password, // A senha já está hasheada no banco
-      userModel.id
+      userModel.password // Passando a senha que já está hasheada
     );
   }
 
@@ -37,11 +37,12 @@ class SequelizeUserRepository extends IUserRepository {
       return null;
     }
 
-    return new User(
+    // --- CORREÇÃO APLICADA AQUI TAMBÉM ---
+    return User.hydrate(
+      userModel.id,
       userModel.name,
       userModel.email,
-      userModel.password,
-      userModel.id
+      userModel.password
     );
   }
 }
