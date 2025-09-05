@@ -30,3 +30,7 @@ class LoginUser {
     });
   }
 }
+
+// --- LINHA ADICIONADA ---
+// Exporta a classe para que outros arquivos possam importá-la
+module.exports = LoginUser;

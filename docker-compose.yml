@@ -1,0 +1,38 @@
+# Define a versão do Docker Compose que estamos usando
+version: '3.8'
+
+# A seção onde todos os nossos serviços (contêineres) são definidos
+services:
+  # O serviço do banco de dados PostgreSQL
+  postgres:
+    image: postgres:13 # Usa a imagem oficial do Postgres, versão 13
+    container_name: db_postgres # Nomeia o contêiner para fácil identificação
+    restart: always # Reinicia o contêiner automaticamente se ele parar
+    environment:
+      # Define as variáveis de ambiente para o contêiner do Postgres
+      POSTGRES_USER: postgres # O usuário do banco
+      POSTGRES_PASSWORD: password # A senha do banco. Mude se quiser, mas lembre-se de atualizar o .env
+      POSTGRES_DB: exemplo_node # O nome do banco de dados que será criado
+    ports:
+      # Mapeia a porta 5432 do seu computador para a porta 5432 do contêiner
+      - "5432:5432"
+    volumes:
+      # Cria um volume para persistir os dados do banco, para que não se percam
+      - postgres-data:/var/lib/postgresql/data
+
+  # O serviço do Redis
+  redis:
+    image: redis:7.2 # Usa a imagem oficial do Redis, versão 7.2
+    container_name: cache_redis # Nomeia o contêiner
+    restart: always # Reinicia o contêiner automaticamente
+    ports:
+      # Mapeia a porta 6379 do seu computador para a porta 6379 do contêiner
+      - "6379:6379"
+    volumes:
+      # Cria um volume para persistir os dados do Redis
+      - redis-data:/data
+
+# Define os volumes que serão gerenciados pelo Docker
+volumes:
+  postgres-data:
+  redis-data:

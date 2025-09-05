@@ -2,8 +2,8 @@
 const { Router } = require('express');
 const AuthController = require('src/Infrastructure/Express/controllers/AuthController');
 const validate = require('src/Infrastructure/Express/middlewares/validationMiddleware');
-// Você precisará criar este arquivo (passo 1.1 da resposta anterior)
-const { registerSchema, loginSchema } = require('src/Infrastructure/Express/validationSchemas/authSchemas'); 
+// AQUI ESTÁ A CORREÇÃO: Adicionado 's' em 'validationsSchemas'
+const { registerSchema, loginSchema } = require('src/Infrastructure/Express/validationsSchemas/authSchemas'); 
 
 // Importa a função que cria o middleware de autenticação
 const createAuthMiddleware = require('src/Infrastructure/Express/middlewares/AuthMiddleware');
